@@ -1,0 +1,99 @@
+@startuml
+title BANK PP — Formularios Swing diseñados con UI Designer
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+hide circle
+
+class LoginForm <<JFrame + UI Designer>> {
+ - panelPrincipal: JPanel
+ - txtCorreo: JTextField
+ - pwdContrasena: JPasswordField
+ - btnIniciar: JButton
+ - btnRegistro: JButton
+ - lblMensaje: JLabel
+ + iniciarSesion(): void
+ + abrirRegistro(): void
+}
+class RegistroClienteForm <<JFrame + UI Designer>> {
+ - panelPrincipal: JPanel
+ - txtDocumento: JTextField
+ - txtNombres: JTextField
+ - txtApellidos: JTextField
+ - txtCorreo: JTextField
+ - pwdContrasena: JPasswordField
+ - txtTelefono: JTextField
+ - txtDireccion: JTextField
+ - btnRegistrar: JButton
+ - btnVolver: JButton
+ + registrarCliente(): void
+ + volver(): void
+}
+class PanelClienteForm <<JFrame + UI Designer>> {
+ - panelPrincipal: JPanel
+ - lblBienvenida: JLabel
+ - tabPrincipal: JTabbedPane
+ - btnCerrarSesion: JButton
+ + cerrarSesion(): void
+}
+class CuentasForm <<JPanel + UI Designer>> {
+ - panelPrincipal: JPanel
+ - tblCuentas: JTable
+ - btnActualizar: JButton
+ + cargarCuentas(): void
+}
+class OperacionesForm <<JPanel + UI Designer>> {
+ - panelPrincipal: JPanel
+ - cmbCuentaOrigen: JComboBox<CuentaBancaria>
+ - txtCuentaDestino: JTextField
+ - txtMonto: JTextField
+ - btnRetirar: JButton
+ - btnTransferir: JButton
+ + retirar(): void
+ + transferir(): void
+}
+class HistorialForm <<JPanel + UI Designer>> {
+ - panelPrincipal: JPanel
+ - cmbCuenta: JComboBox<CuentaBancaria>
+ - tblMovimientos: JTable
+ - btnActualizar: JButton
+ + cargarMovimientos(): void
+}
+class CitasForm <<JPanel + UI Designer>> {
+ - panelPrincipal: JPanel
+ - txtFechaHora: JTextField
+ - txtMotivo: JTextField
+ - tblCitas: JTable
+ - btnSolicitar: JButton
+ - btnCancelar: JButton
+ - btnActualizar: JButton
+ + solicitar(): void
+ + cancelar(): void
+ + cargarCitas(): void
+}
+class SolicitudesForm <<JPanel + UI Designer>> {
+ - panelPrincipal: JPanel
+ - txtDescripcion: JTextArea
+ - tblSolicitudes: JTable
+ - btnEnviar: JButton
+ - btnActualizar: JButton
+ + crearSolicitud(): void
+ + cargarSolicitudes(): void
+}
+
+PanelClienteForm *-- CuentasForm : pestaña Cuentas
+PanelClienteForm *-- OperacionesForm : pestaña Operaciones
+PanelClienteForm *-- HistorialForm : pestaña Historial
+PanelClienteForm *-- CitasForm : pestaña Citas
+PanelClienteForm *-- SolicitudesForm : pestaña Solicitudes
+LoginForm ..> RegistroClienteForm : abrir registro
+LoginForm ..> PanelClienteForm : acceso correcto
+note bottom of LoginForm
+  El formulario muestra su nombre,
+  componentes (atributos) y acciones.
+end note
+note bottom of CitasForm
+  Fecha local: aaaa-MM-ddTHH:mm
+end note
+@enduml

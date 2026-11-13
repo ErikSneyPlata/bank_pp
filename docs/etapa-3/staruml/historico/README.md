@@ -1,0 +1,1 @@
+Estos diagramas son versiones anteriores conservadas para consulta. Los archivos finales y editables están en la carpeta principal: BankPP-diagrama-clases.mdj y BankPP-diagramas-formularios.mdj. No usarlos como modelo de la implementación actual.

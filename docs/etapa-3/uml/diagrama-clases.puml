@@ -1,0 +1,144 @@
+@startuml
+title BANK PP — Diagrama de clases del dominio
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+hide circle
+
+abstract class Usuario {
+ - id: UUID
+ - documento: String
+ - nombres: String
+ - apellidos: String
+ - correo: String
+ - rol: RolUsuario
+ - activo: boolean
+ # Usuario(id: UUID, documento: String, nombres: String, apellidos: String, correo: String, rol: RolUsuario, activo: boolean)
+ + getId(): UUID
+ + getDocumento(): String
+ + getNombres(): String
+ + getApellidos(): String
+ + getCorreo(): String
+ + getRol(): RolUsuario
+ + isActivo(): boolean
+ + setActivo(activo: boolean): void
+}
+class Cliente {
+ - datosContacto: DatosContacto
+ + Cliente(id: UUID, documento: String, nombres: String, apellidos: String, correo: String, activo: boolean, contacto: DatosContacto)
+ + getDatosContacto(): DatosContacto
+}
+class Empleado {
+ + Empleado(id: UUID, documento: String, nombres: String, apellidos: String, correo: String, activo: boolean)
+}
+class DatosContacto {
+ - telefono: String
+ - direccion: String
+ + DatosContacto(telefono: String, direccion: String)
+ + getTelefono(): String
+ + getDireccion(): String
+}
+class Banco {
+ - id: UUID
+ - nombre: String
+ - empleados: List<Empleado>
+ + Banco(id: UUID, nombre: String)
+ + agregarEmpleado(empleado: Empleado): void
+ + retirarEmpleado(empleado: Empleado): void
+ + getEmpleados(): List<Empleado>
+}
+class CuentaBancaria {
+ - id: UUID
+ - usuarioId: UUID
+ - numero: String
+ - saldo: BigDecimal
+ - moneda: String
+ - estado: EstadoCuenta
+ + CuentaBancaria(id: UUID, usuarioId: UUID, numero: String, saldo: BigDecimal, moneda: String, estado: EstadoCuenta)
+ + getId(): UUID
+ + getUsuarioId(): UUID
+ + getNumero(): String
+ + getSaldo(): BigDecimal
+ + getMoneda(): String
+ + getEstado(): EstadoCuenta
+ + toString(): String
+}
+abstract class Transaccion {
+ - id: UUID
+ - cuentaOrigenId: UUID
+ - cuentaDestinoId: UUID
+ - actorId: UUID
+ - monto: BigDecimal
+ - fecha: Instant
+ - descripcion: String
+ # Transaccion(id: UUID, origen: UUID, destino: UUID, actor: UUID, monto: BigDecimal, fecha: Instant, descripcion: String)
+ + getTipo(): TipoTransaccion {abstract}
+ + validar(): boolean {abstract}
+ + getId(): UUID
+ + getCuentaOrigenId(): UUID
+ + getCuentaDestinoId(): UUID
+ + getActorId(): UUID
+ + getMonto(): BigDecimal
+ + getFecha(): Instant
+ + getDescripcion(): String
+}
+class Retiro {
+ + Retiro(id: UUID, origen: UUID, actor: UUID, monto: BigDecimal, fecha: Instant, descripcion: String)
+ + getTipo(): TipoTransaccion
+ + validar(): boolean
+}
+class Transferencia {
+ + Transferencia(id: UUID, origen: UUID, destino: UUID, actor: UUID, monto: BigDecimal, fecha: Instant, descripcion: String)
+ + getTipo(): TipoTransaccion
+ + validar(): boolean
+}
+class Cita {
+ - id: UUID
+ - clienteId: UUID
+ - fechaHora: Instant
+ - motivo: String
+ - estado: EstadoCita
+ + Cita(id: UUID, clienteId: UUID, fechaHora: Instant, motivo: String, estado: EstadoCita)
+ + getId(): UUID
+ + getClienteId(): UUID
+ + getFechaHora(): Instant
+ + getMotivo(): String
+ + getEstado(): EstadoCita
+ + setEstado(estado: EstadoCita): void
+}
+class SolicitudAtencion {
+ - id: UUID
+ - clienteId: UUID
+ - descripcion: String
+ - estado: EstadoSolicitud
+ + SolicitudAtencion(id: UUID, clienteId: UUID, descripcion: String, estado: EstadoSolicitud)
+ + getId(): UUID
+ + getClienteId(): UUID
+ + getDescripcion(): String
+ + getEstado(): EstadoSolicitud
+ + setEstado(estado: EstadoSolicitud): void
+}
+enum RolUsuario { CLIENTE; EMPLEADO }
+enum EstadoCuenta { ACTIVA; BLOQUEADA; CERRADA }
+enum TipoTransaccion { RETIRO; TRANSFERENCIA }
+enum EstadoCita { SOLICITADA; CONFIRMADA; CANCELADA; COMPLETADA }
+enum EstadoSolicitud { ABIERTA; EN_PROCESO; RESUELTA; CERRADA }
+
+Usuario <|-- Cliente
+Usuario <|-- Empleado
+Cliente *-- DatosContacto : composición 1 a 1
+Banco o-- Empleado : agregación 1 a muchos
+Cliente "1" -- "0..*" CuentaBancaria : titular
+CuentaBancaria "1" -- "0..*" Transaccion : cuenta de origen
+CuentaBancaria "0..1" -- "0..*" Transaccion : cuenta destino
+Transaccion <|-- Retiro
+Transaccion <|-- Transferencia
+Cliente "1" -- "0..*" Cita : solicita
+Cliente "1" -- "0..*" SolicitudAtencion : crea
+Usuario .. RolUsuario
+CuentaBancaria .. EstadoCuenta
+Transaccion .. TipoTransaccion
+Cita .. EstadoCita
+SolicitudAtencion .. EstadoSolicitud
+@enduml

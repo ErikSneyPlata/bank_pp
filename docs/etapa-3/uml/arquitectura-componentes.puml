@@ -1,0 +1,22 @@
+@startuml
+title Bank PP — Componentes y perfiles
+left to right direction
+package "Cliente Java 25" {
+  [UI Swing] --> [Controladores]
+  [Controladores] --> [Servicios de aplicación]
+  [Servicios de aplicación] --> [Dominio POO]
+  [Servicios de aplicación] --> (Puertos Repository)
+  (Puertos Repository) --> [Selector de perfil]
+  [Selector de perfil] --> [Adaptador JDBC local] : perfil local
+  [Selector de perfil] --> [Adaptador HTTP Supabase] : perfil remoto
+}
+database "PostgreSQL local" as LocalDB
+cloud "Supabase Auth + Data API" as Supabase
+database "PostgreSQL Supabase" as CloudDB
+[Adaptador JDBC local] --> LocalDB : JDBC
+[Adaptador HTTP Supabase] --> Supabase : HTTPS + clave pública + JWT
+Supabase --> CloudDB : RLS + RPC
+note bottom of CloudDB
+No distribuir service_role ni contraseña DB.
+end note
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title Bank PP — Navegación
+start
+:Login;
+if (Credenciales válidas?) then (No)
+  :Mostrar error seguro;
+  stop
+else (Sí)
+  if (Rol?) then (Cliente)
+    :Panel cliente;
+    :Cuentas y saldos;
+    :Transferencias / retiros;
+    :Historial;
+    :Citas;
+    :Solicitudes;
+  else (Empleado)
+    :Panel empleado;
+    :Gestión de clientes;
+    :Gestión de cuentas;
+    :Transacciones;
+    :Citas;
+    :Atención de solicitudes;
+  endif
+endif
+stop
+@enduml

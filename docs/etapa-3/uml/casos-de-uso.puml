@@ -1,0 +1,37 @@
+@startuml
+title Bank PP — Casos de uso por rol
+left to right direction
+actor Cliente
+actor Empleado
+rectangle "Bank PP" {
+  usecase "Registrarse / iniciar sesión" as Auth
+  usecase "Consultar cuentas y saldo" as Accounts
+  usecase "Transferir" as Transfer
+  usecase "Retirar" as Withdraw
+  usecase "Consultar movimientos" as History
+  usecase "Solicitar / cancelar cita" as Appointment
+  usecase "Crear / consultar solicitud" as Request
+  usecase "Gestionar clientes" as ManageClients
+  usecase "Gestionar cuentas" as ManageAccounts
+  usecase "Consultar transacciones" as ManageTransactions
+  usecase "Gestionar citas" as ManageAppointments
+  usecase "Atender solicitudes" as ManageRequests
+}
+Cliente --> Auth
+Cliente --> Accounts
+Cliente --> Transfer
+Cliente --> Withdraw
+Cliente --> History
+Cliente --> Appointment
+Cliente --> Request
+Empleado --> Auth
+Empleado --> ManageClients
+Empleado --> ManageAccounts
+Empleado --> ManageTransactions
+Empleado --> ManageAppointments
+Empleado --> ManageRequests
+note bottom of Transfer
+La operación completa y su historial
+se confirman de forma atómica.
+end note
+@enduml

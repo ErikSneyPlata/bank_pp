@@ -38,3 +38,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+# Bank PP local credentials and database exports
+.env
+.env.*
+!.env.example
+/database/conf/*.conf
+/database/conf/*.properties
+*.dump
+*.backup

@@ -1,0 +1,36 @@
+classDiagram
+ direction LR
+ class LoginForm {
+  <<Swing UI Designer Form>>
+  -JButton button1
+  -JButton button2
+  -JPasswordField passwordField1
+  -JTextField textField1
+  -createUIComponents() void
+  +onLoginClick() void
+  +onRegisterClick() void
+ }
+ class JLabel {
+  <<Swing component>>
+ }
+ class JTextField {
+  <<Swing component>>
+ }
+ class JPasswordField {
+  <<Swing component>>
+ }
+ class JButton {
+  <<Swing component>>
+ }
+ class LoginController {
+  <<proposed, not implemented>>
+  +iniciarSesion(usuario, contrasena) void
+  +registrarCliente() void
+  +validarFormulario() boolean
+ }
+ LoginForm "1" *-- "3" JLabel : labels del formulario
+ LoginForm "1" *-- "1" JTextField : textField1 usuario
+ LoginForm "1" *-- "1" JPasswordField : passwordField1 contrasena
+ LoginForm "1" *-- "2" JButton : button1 y button2
+ LoginForm ..> LoginController : eventos previstos
+ note for LoginForm "Controles actuales del .form. button1, button2, textField1 y passwordField1 son nombres provisionales. createUIComponents es el unico metodo declarado. onLoginClick y onRegisterClick son acciones previstas, aun no implementadas."

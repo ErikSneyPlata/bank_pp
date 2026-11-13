@@ -1,0 +1,120 @@
+@startuml
+title BANK PP — Interfaces, contratos e implementaciones
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+hide circle
+
+package "Servicios de aplicación" {
+  class AutenticacionService {
+    + iniciarSesion(correo: String, credencial: String): Usuario
+    + registrarCliente(datos: DatosRegistro): Cliente
+  }
+  class CuentaService {
+    + listarCuentas(usuarioId: UUID): List<CuentaBancaria>
+    + consultarSaldo(cuentaId: UUID): BigDecimal
+  }
+  class TransaccionService {
+    + retirar(datos: RetiroDTO): Transaccion
+    + transferir(datos: TransferenciaDTO): Transaccion
+    + listarMovimientos(cuentaId: UUID): List<Transaccion>
+  }
+}
+
+package "Interfaces (contratos)" {
+  interface AuthRepository {
+    + iniciarSesion(correo: String, credencial: String): Usuario
+    + registrarCliente(datos: DatosRegistro): Cliente
+  }
+  interface CuentaRepository {
+    + buscarPorPropietario(usuarioId: UUID): List<CuentaBancaria>
+    + buscarPorId(cuentaId: UUID): Optional<CuentaBancaria>
+    + guardar(cuenta: CuentaBancaria): void
+  }
+  interface TransaccionRepository {
+    + ejecutarRetiro(datos: RetiroDTO): Transaccion
+    + ejecutarTransferencia(datos: TransferenciaDTO): Transaccion
+    + listarPorCuenta(cuentaId: UUID): List<Transaccion>
+  }
+  interface OperacionBancaria {
+    + validar(): boolean
+    + ejecutar(): void
+  }
+}
+
+package "Objetos que implementan contratos — PostgreSQL local" {
+  class JdbcAuthRepository {
+    + iniciarSesion(correo: String, credencial: String): Usuario
+    + registrarCliente(datos: DatosRegistro): Cliente
+  }
+  class JdbcCuentaRepository {
+    + buscarPorPropietario(usuarioId: UUID): List<CuentaBancaria>
+    + buscarPorId(cuentaId: UUID): Optional<CuentaBancaria>
+    + guardar(cuenta: CuentaBancaria): void
+  }
+  class JdbcTransaccionRepository {
+    + ejecutarRetiro(datos: RetiroDTO): Transaccion
+    + ejecutarTransferencia(datos: TransferenciaDTO): Transaccion
+    + listarPorCuenta(cuentaId: UUID): List<Transaccion>
+  }
+}
+
+package "Objetos que implementan contratos — Supabase remoto" {
+  class SupabaseAuthRepository {
+    + iniciarSesion(correo: String, credencial: String): Usuario
+    + registrarCliente(datos: DatosRegistro): Cliente
+  }
+  class SupabaseCuentaRepository {
+    + buscarPorPropietario(usuarioId: UUID): List<CuentaBancaria>
+    + buscarPorId(cuentaId: UUID): Optional<CuentaBancaria>
+    + guardar(cuenta: CuentaBancaria): void
+  }
+  class SupabaseTransaccionRepository {
+    + ejecutarRetiro(datos: RetiroDTO): Transaccion
+    + ejecutarTransferencia(datos: TransferenciaDTO): Transaccion
+    + listarPorCuenta(cuentaId: UUID): List<Transaccion>
+  }
+}
+
+package "Operaciones de dominio" {
+  abstract class Transaccion {
+    + validar(): boolean
+    + ejecutar(): void
+  }
+  class Transferencia {
+    + validar(): boolean
+    + ejecutar(): void
+  }
+  class Retiro {
+    + validar(): boolean
+    + ejecutar(): void
+  }
+}
+
+AutenticacionService ..> AuthRepository : usa
+CuentaService ..> CuentaRepository : usa
+TransaccionService ..> CuentaRepository : valida cuentas
+TransaccionService ..> TransaccionRepository : registra operación
+AuthRepository <|.. JdbcAuthRepository
+AuthRepository <|.. SupabaseAuthRepository
+CuentaRepository <|.. JdbcCuentaRepository
+CuentaRepository <|.. SupabaseCuentaRepository
+TransaccionRepository <|.. JdbcTransaccionRepository
+TransaccionRepository <|.. SupabaseTransaccionRepository
+Transaccion <|-- Transferencia
+Transaccion <|-- Retiro
+OperacionBancaria <|.. Transferencia
+OperacionBancaria <|.. Retiro
+
+note bottom of JdbcTransaccionRepository
+  JDBC con transacción SQL: débito,
+  crédito e historial atómicos.
+end note
+note bottom of SupabaseTransaccionRepository
+  REST/RPC autenticado con JWT y RLS.
+  RPC protegida ejecuta la operación
+  monetaria de forma atómica.
+end note
+@enduml

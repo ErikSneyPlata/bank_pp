@@ -1,0 +1,67 @@
+@startuml
+title BANK PP — Modelo relacional PostgreSQL local
+hide circle
+skinparam linetype ortho
+entity usuarios {
+ * id : UUID <<PK>>
+ --
+ documento : VARCHAR(30) <<UQ>>
+ nombres : VARCHAR(80)
+ apellidos : VARCHAR(80)
+ correo : VARCHAR(254) <<UQ>>
+ contrasena : VARCHAR(120)
+ rol : VARCHAR(20)
+ activo : BOOLEAN
+}
+entity datos_contacto {
+ * usuario_id : UUID <<PK, FK>>
+ --
+ telefono : VARCHAR(25)
+ direccion : VARCHAR(180)
+}
+entity cuentas {
+ * id : UUID <<PK>>
+ --
+ usuario_id : UUID <<FK>>
+ numero : VARCHAR(30) <<UQ>>
+ saldo : NUMERIC(18,2)
+ moneda : CHAR(3)
+ estado : VARCHAR(20)
+}
+entity transacciones {
+ * id : UUID <<PK>>
+ --
+ cuenta_origen_id : UUID <<FK>>
+ cuenta_destino_id : UUID nullable <<FK>>
+ usuario_actor_id : UUID <<FK>>
+ tipo : VARCHAR(20)
+ monto : NUMERIC(18,2)
+ fecha : TIMESTAMPTZ
+ descripcion : TEXT
+}
+entity citas {
+ * id : UUID <<PK>>
+ --
+ cliente_id : UUID <<FK>>
+ empleado_asignado_id : UUID nullable <<FK>>
+ fecha_hora : TIMESTAMPTZ
+ estado : VARCHAR(20)
+ motivo : TEXT
+}
+entity solicitudes_atencion {
+ * id : UUID <<PK>>
+ --
+ cliente_id : UUID <<FK>>
+ empleado_asignado_id : UUID nullable <<FK>>
+ descripcion : TEXT
+ estado : VARCHAR(20)
+}
+usuarios ||--o| datos_contacto
+usuarios ||--o{ cuentas
+cuentas ||--o{ transacciones : origen
+cuentas |o--o{ transacciones : destino
+usuarios ||--o{ citas : cliente
+usuarios |o--o{ citas : empleado
+usuarios ||--o{ solicitudes_atencion : cliente
+usuarios |o--o{ solicitudes_atencion : empleado
+@enduml

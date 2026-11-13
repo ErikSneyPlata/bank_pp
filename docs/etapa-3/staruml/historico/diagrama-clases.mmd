@@ -1,0 +1,125 @@
+classDiagram
+ direction LR
+ class Usuario {
+  <<abstract>>
+  -UUID id
+  -String documento
+  -String nombres
+  -String apellidos
+  -String correo
+  -RolUsuario rol
+  -boolean activo
+  +actualizarDatos(nombres, apellidos) void
+  +cambiarCorreo(correo) void
+  +activar() void
+  +desactivar() void
+ }
+ class Cliente {
+  +solicitarCita(fecha, motivo) Cita
+  +crearSolicitud(descripcion) SolicitudAtencion
+ }
+ class Empleado {
+  +atenderCita(cita) void
+  +gestionarSolicitud(solicitud) void
+ }
+ class DatosContacto {
+  -String telefono
+  -String direccion
+  +actualizar(telefono, direccion) void
+ }
+ class Banco {
+  -String nombre
+  +agregarEmpleado(empleado) void
+  +retirarEmpleado(empleado) void
+ }
+ class CuentaBancaria {
+  -UUID id
+  -String numero
+  -BigDecimal saldo
+  -String moneda
+  -EstadoCuenta estado
+  +consultarSaldo() BigDecimal
+  +depositar(monto) void
+  +retirar(monto) void
+  +bloquear() void
+  +cerrar() void
+ }
+ class Transaccion {
+  <<abstract>>
+  -UUID id
+  -BigDecimal monto
+  -Instant fecha
+  +validar() boolean
+  +ejecutar() void
+ }
+ class Transferencia {
+  +validar() boolean
+  +ejecutar() void
+ }
+ class Retiro {
+  +validar() boolean
+  +ejecutar() void
+ }
+ class Cita {
+  -UUID id
+  -LocalDateTime fecha
+  -EstadoCita estado
+  -String motivo
+  +confirmar() void
+  +cancelar() void
+  +completar() void
+ }
+ class SolicitudAtencion {
+  -UUID id
+  -String descripcion
+  -EstadoSolicitud estado
+  -Instant fechaCreacion
+  +asignarEmpleado(empleado) void
+  +cambiarEstado(estado) void
+  +cerrar() void
+ }
+ class OperacionBancaria {
+  <<interface>>
+  +validar() boolean
+  +ejecutar() void
+ }
+ class RolUsuario {
+  <<enumeration>>
+  CLIENTE
+  EMPLEADO
+ }
+ class EstadoCuenta {
+  <<enumeration>>
+  ACTIVA
+  BLOQUEADA
+  CERRADA
+ }
+ class EstadoCita {
+  <<enumeration>>
+  SOLICITADA
+  CONFIRMADA
+  CANCELADA
+  COMPLETADA
+ }
+ class EstadoSolicitud {
+  <<enumeration>>
+  ABIERTA
+  EN_PROCESO
+  RESUELTA
+  CERRADA
+ }
+ Usuario <|-- Cliente
+ Usuario <|-- Empleado
+ Cliente "1" *-- "0..1" DatosContacto : composicion
+ Banco "1" o-- "0..*" Empleado : agregacion
+ Cliente "1" --> "0..*" CuentaBancaria : titular
+ Cliente "1" --> "0..*" Cita : solicita
+ Empleado "0..1" --> "0..*" Cita : atiende
+ Cliente "1" --> "0..*" SolicitudAtencion : crea
+ Empleado "0..1" --> "0..*" SolicitudAtencion : gestiona
+ CuentaBancaria "1" --> "0..*" Transaccion : cuentaOrigen
+ CuentaBancaria "0..1" --> "0..*" Transaccion : cuentaDestino
+ Transaccion <|-- Transferencia
+ Transaccion <|-- Retiro
+ OperacionBancaria <|.. Transferencia
+ OperacionBancaria <|.. Retiro

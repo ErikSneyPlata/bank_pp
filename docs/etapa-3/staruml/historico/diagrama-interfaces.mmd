@@ -1,0 +1,90 @@
+classDiagram
+ direction LR
+ class AuthRepository {
+  <<interface>>
+  +iniciarSesion(correo, credencial) Usuario
+  +registrarCliente(datos) Cliente
+ }
+ class CuentaRepository {
+  <<interface>>
+  +buscarPorPropietario(usuarioId) List~CuentaBancaria~
+  +buscarPorId(cuentaId) Optional~CuentaBancaria~
+  +guardar(cuenta) void
+ }
+ class TransaccionRepository {
+  <<interface>>
+  +ejecutarRetiro(datos) Transaccion
+  +ejecutarTransferencia(datos) Transaccion
+  +listarPorCuenta(cuentaId) List~Transaccion~
+ }
+ class OperacionBancaria {
+  <<interface>>
+  +validar() boolean
+  +ejecutar() void
+ }
+ class AutenticacionService {
+  +iniciarSesion(correo, credencial) Usuario
+  +registrarCliente(datos) Cliente
+ }
+ class CuentaService {
+  +listarCuentas(usuarioId) List~CuentaBancaria~
+  +consultarSaldo(cuentaId) BigDecimal
+ }
+ class TransaccionService {
+  +retirar(datos) Transaccion
+  +transferir(datos) Transaccion
+  +listarMovimientos(cuentaId) List~Transaccion~
+ }
+ class JdbcAuthRepository {
+  +iniciarSesion(correo, credencial) Usuario
+  +registrarCliente(datos) Cliente
+ }
+ class JdbcCuentaRepository {
+  +buscarPorPropietario(usuarioId) List~CuentaBancaria~
+  +buscarPorId(cuentaId) Optional~CuentaBancaria~
+  +guardar(cuenta) void
+ }
+ class JdbcTransaccionRepository {
+  +ejecutarRetiro(datos) Transaccion
+  +ejecutarTransferencia(datos) Transaccion
+  +listarPorCuenta(cuentaId) List~Transaccion~
+ }
+ class SupabaseAuthRepository {
+  +iniciarSesion(correo, credencial) Usuario
+  +registrarCliente(datos) Cliente
+ }
+ class SupabaseCuentaRepository {
+  +buscarPorPropietario(usuarioId) List~CuentaBancaria~
+  +buscarPorId(cuentaId) Optional~CuentaBancaria~
+  +guardar(cuenta) void
+ }
+ class SupabaseTransaccionRepository {
+  +ejecutarRetiro(datos) Transaccion
+  +ejecutarTransferencia(datos) Transaccion
+  +listarPorCuenta(cuentaId) List~Transaccion~
+ }
+ class Transferencia {
+  +validar() boolean
+  +ejecutar() void
+ }
+ class Retiro {
+  +validar() boolean
+  +ejecutar() void
+ }
+ class Transaccion {
+  <<abstract>>
+ }
+ AutenticacionService ..> AuthRepository : usa
+ CuentaService ..> CuentaRepository : usa
+ TransaccionService ..> CuentaRepository : valida cuentas
+ TransaccionService ..> TransaccionRepository : registra operaciones
+ AuthRepository <|.. JdbcAuthRepository : implementa
+ AuthRepository <|.. SupabaseAuthRepository : implementa
+ CuentaRepository <|.. JdbcCuentaRepository : implementa
+ CuentaRepository <|.. SupabaseCuentaRepository : implementa
+ TransaccionRepository <|.. JdbcTransaccionRepository : implementa
+ TransaccionRepository <|.. SupabaseTransaccionRepository : implementa
+ Transaccion <|-- Transferencia
+ Transaccion <|-- Retiro
+ OperacionBancaria <|.. Transferencia
+ OperacionBancaria <|.. Retiro
